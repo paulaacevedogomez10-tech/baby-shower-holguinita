@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Shower - Familia Holguinista</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff0f5; /* Tono rosa pastel muy suave */
+            color: #5c3a4d;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .header-container {
+            background-color: #ffe4e1;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border: 2px dashed #ffb6c1;
+        }
+        h1 {
+            color: #d87093;
+            font-size: 1.8em;
+            margin: 0;
+        }
+        p.subtitle {
+            font-size: 1.2em;
+            color: #8b5a83;
+        }
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .gift-box {
+            background-color: #ffb6c1;
+            width: 90px;
+            height: 90px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 2.5em;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            transition: transform 0.3s, background-color 0.3s;
+            border: 2px solid #ff69b4;
+            user-select: none;
+        }
+        .gift-box:hover {
+            transform: scale(1.08);
+            background-color: #ffc0cb;
+        }
+        .revealed {
+            background-color: #ffffff;
+            font-size: 0.8em;
+            padding: 8px;
+            cursor: default;
+            border: 2px dashed #d87093;
+            color: #333;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            flex-direction: column;
+            transform: none !important;
+        }
+        .revealed span {
+            font-weight: bold;
+            color: #d87093;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+        .btn-descargar {
+            margin-top: 40px;
+            padding: 15px 30px;
+            background-color: #d87093;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
+        }
+        .btn-descargar:hover {
+            background-color: #c71585;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <h1>🎀 Nuestra sobrina viene en camino y la familia Holguinista celebra su llegada 🎀</h1>
+        <p class="subtitle">Toca una cajita, ingresa tu nombre y descubre qué hermoso detalle le obsequiarás a la bebé de Angiolina y Juan Bernardo.</p>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <button class="btn-descargar" onclick="descargarLista()">📥 Descargar Listado de Regalos</button>
+
+    <script>
+        // Lista de 50 regalos extraída del documento
+        const regalos = [
+            "Pañales (Etapa 0)", "Pañales (Etapa 0)", "Pañales (etapa 1)", "Pañales (etapa 1)", "Pañales (etapa 1)",
+            "Toallitas húmedas + Crema antipañalitis", "Toallitas húmedas + Crema antipañalitis", 
+            "Shampoo + Jabón líquido suave para bebé", "Shampoo + Jabón líquido suave para bebé", 
+            "Aceite para bebé + crema humectante", "Termómetro digital + Aspirador nasal", 
+            "Aceite para bebé + crema humectante", "Baberos (semanario)", "Camisillas (semanario)", 
+            "Vestido talla 0 – 3 meses", "Vestido talla 3 – 6 meses", "Mameluco talla 0 – 3 meses", 
+            "Mameluco talla 3 – 6 meses", "Zapaticos", "Chancletitas", "Pijama talla 0 – 3 meses", 
+            "Pijama talla 3 – 6 meses", "Cobija suave", "Sábanas para cuna", "Almohada antireflujo", 
+            "Móvil para cuna", "Nido para bebé", "Lámpara nocturna", "Peluche para dormir", 
+            "Tetero antireflujo", "Esterilizador de teteros", "Termo para agua caliente", 
+            "Platos y cucharas de silicona", "Vaso entrenador", "Bañera para bebé", "Toalla con capucha", 
+            "Esponja suave + jabón de baño", "Kit de higiene (cepillo, peine, etc.)", "Cambiador portátil", 
+            "Sonajeros", "Juguete sensorial", "Llama dientes", "Álbum de recuerdos del bebé", 
+            "Perfume para bebé", "Vasenilla", "Accesorios para la cabecita", "Vestido talla 0 - 3 meses", 
+            "Vestido talla 3 - 6 meses", "Pijama talla 0 – 3 meses", "Pijama talla 3 – 6 meses"
+        ];
+
+        // Mezclar regalos de forma aleatoria (Fisher-Yates)
+        for (let i = regalos.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [regalos[i], regalos[j]] = [regalos[j], regalos[i]];
+        }
+
+        const grid = document.getElementById('grid');
+        const asignaciones = []; // Aquí guardaremos quién regaló qué
+
+        // Crear la cuadrícula de regalos
+        regalos.forEach((regalo, index) => {
+            const box = document.createElement('div');
+            box.className = 'gift-box';
+            box.innerHTML = '🎁';
+            box.id = `box-${index}`;
+            
+            box.onclick = function() {
+                if (!box.classList.contains('revealed')) {
+                    const nombreProfe = prompt("¡Qué emoción! Por favor, ingresa tu nombre para destapar este regalo:");
+                    
+                    if (nombreProfe && nombreProfe.trim() !== "") {
+                        // Cambiar la caja
+                        box.classList.add('revealed');
+                        box.innerHTML = `${regalo} <br><span>De: ${nombreProfe}</span>`;
+                        
+                        // Guardar en el registro
+                        asignaciones.push({
+                            numeroCaja: index + 1,
+                            profesor: nombreProfe,
+                            regalo: regalo
+                        });
+                    }
+                }
+            };
+            
+            grid.appendChild(box);
+        });
+
+        // Función para descargar el Excel (CSV)
+        function descargarLista() {
+            if (asignaciones.length === 0) {
+                alert("Aún no se ha destapado ningún regalo.");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Caja,Profesor,Regalo\n"; // Cabeceras
+
+            asignaciones.forEach(function(row) {
+                let fila = `${row.numeroCaja},"${row.profesor}","${row.regalo}"`;
+                csvContent += fila + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Listado_Regalos_Baby_Shower.csv");
+            document.body.appendChild(link); 
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
